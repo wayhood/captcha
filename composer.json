@@ -41,6 +41,7 @@
         "phpstan/phpstan": "^1.0",
         "swoole/ide-helper": "^5.0"
     },
+    "minimum-stability": "dev",
     "repositories":[
        {
            "type": "git",
