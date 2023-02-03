@@ -25,22 +25,28 @@
         }
     },
     "require": {
-        "php": ">=7.3",
+        "php": ">=8.0",
         "ext-fileinfo": "*",
         "ext-imagick": "*",
-        "ext-swoole": ">=4.5",
-        "hyperf-ext/encryption": "~2.2.0",
-        "hyperf/cache": "~2.2.0",
-        "hyperf/di": "~2.2.0",
-        "hyperf/framework": "~2.2.0",
-        "hyperf/validation": "~2.2.0"
+        "ext-swoole": ">=4.8",
+        "hyperf-ext/encryption": "dev-master",
+        "hyperf/cache": "~3.0.0",
+        "hyperf/di": "~3.0.0",
+        "hyperf/framework": "~3.0.0",
+        "hyperf/validation": "~3.0.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "hyperf/testing": "~2.2.0",
-        "phpstan/phpstan": "^0.12",
-        "swoole/ide-helper": "dev-master"
+        "hyperf/testing": "~3.0.0",
+        "phpstan/phpstan": "^1.0",
+        "swoole/ide-helper": "^5.0"
     },
+    "repositories":[
+       {
+           "type": "vcs",
+           "url": "https://github.com/netyum/encryption.git"
+       }
+    ],
     "config": {
         "sort-packages": true
     },

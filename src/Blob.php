@@ -17,12 +17,12 @@ class Blob
     /**
      * @var string
      */
-    private $raw;
+    private string $raw;
 
     /**
      * @var string
      */
-    private $mimetype;
+    private string $mimetype;
 
     public function __construct(string $raw)
     {

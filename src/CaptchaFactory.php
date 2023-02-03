@@ -10,11 +10,17 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Captcha;
 
+use Exception;
 use Hyperf\Contract\ConfigInterface;
 use HyperfExt\Encryption\Crypt;
 use Imagick;
 use ImagickDraw;
+use ImagickDrawException;
+use ImagickException;
 use ImagickPixel;
+use ImagickPixelException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\SimpleCache\CacheInterface;
 use Throwable;
 
@@ -26,28 +32,25 @@ class CaptchaFactory
     /**
      * @var array
      */
-    protected $fonts;
+    protected array $fonts;
 
-    /**
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * @var \Psr\SimpleCache\CacheInterface
-     */
-    protected $cache;
-
-    public function __construct(ConfigInterface $config, CacheInterface $cache)
+    public function __construct(protected ConfigInterface $config, protected CacheInterface $cache)
     {
         $this->config = $config->get('captcha');
-        $this->cache = $cache;
         $this->fonts = glob(realpath($this->config['fonts_dir']) . '/*.{ttf,otf}', GLOB_BRACE);
     }
 
+    /**
+     * @throws ImagickException
+     * @throws NotFoundExceptionInterface
+     * @throws ImagickDrawException
+     * @throws ContainerExceptionInterface
+     * @throws ImagickPixelException
+     * @throws Exception
+     */
     public function create(?array $config = null): Captcha
     {
-        $config = $config ? array_merge($this->config, $config) : $this->config;
+        $config = $config ? array_merge((array)$this->config, $config) : $this->config;
 
         $text = $this->getRandomText($config['characters'], $config['length']);
         $expiresAt = $config['ttl'] + time();
@@ -68,22 +71,37 @@ class CaptchaFactory
                 $this->cache->set($cacheKey, $expiresAt, $expiresAt - time());
                 return true;
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
 
         return false;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
+     */
     protected function assembleKey(string $text, int $expiresAt): string
     {
         return Crypt::encrypt([strtolower($text), $expiresAt, random_bytes(16)], true, $this->config['encryption_driver']);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     protected function disassembleKey(string $key): array
     {
         return Crypt::decrypt($key, true, $this->config['encryption_driver']);
     }
 
+    /**
+     * @throws ImagickDrawException
+     * @throws ImagickPixelException
+     * @throws ImagickException
+     * @throws Exception
+     */
     protected function createImageBlob(string $text, array $config): Blob
     {
         $image = new Imagick();
@@ -153,6 +171,9 @@ class CaptchaFactory
         return $colors[array_rand($colors, 1)];
     }
 
+    /**
+     * @throws Exception
+     */
     protected function getRandomText(string $characters, int $length): string
     {
         $text = '';

@@ -18,22 +18,22 @@ class Captcha implements Arrayable
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var string
      */
-    private $text;
+    private string $text;
 
     /**
-     * @var \HyperfExt\Captcha\Blob
+     * @var Blob
      */
-    private $blob;
+    private Blob $blob;
 
     /**
-     * @var \Carbon\Carbon
+     * @var Carbon
      */
-    private $expiresAt;
+    private Carbon $expiresAt;
 
     public function __construct(string $key, string $text, Blob $blob, int $expiresAt)
     {
